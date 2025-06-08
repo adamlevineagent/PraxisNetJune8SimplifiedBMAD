@@ -1,0 +1,98 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../api/auth/guards/jwt-auth.guard';
+import { AdminGuard } from '../api/auth/guards/admin.guard';
+
+@ApiTags('users')
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @UseGuards(AdminGuard)
+  @Get()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'Return all users' })
+  findAll() {
+    return this.usersService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({ status: 200, description: 'Return the current user profile' })
+  getProfile(@Request() req) {
+    return this.usersService.findOne(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('opportunities')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get opportunities for current user' })
+  @ApiResponse({ status: 200, description: 'Return opportunities for current user' })
+  getOpportunities(@Request() req) {
+    return this.usersService.getOpportunities(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('opportunities/:id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update opportunity status' })
+  @ApiResponse({ status: 200, description: 'Return updated opportunity' })
+  updateOpportunityStatus(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() body: { status: 'INTERESTED' | 'NOT_INTERESTED' },
+  ) {
+    return this.usersService.updateOpportunityStatus(id, req.user.id, body.status);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiResponse({ status: 200, description: 'Return updated profile' })
+  updateProfile(@Request() req, @Body() body: { positionMatrix: any }) {
+    return this.usersService.updateProfile(req.user.id, body.positionMatrix);
+  }
+
+  @UseGuards(AdminGuard)
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, description: 'Return user by ID' })
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+
+  @UseGuards(AdminGuard)
+  @Patch(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({ status: 200, description: 'Return updated user' })
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
+
+  @UseGuards(AdminGuard)
+  @Patch(':id/status')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user status' })
+  @ApiResponse({ status: 200, description: 'Return updated user' })
+  updateStatus(@Param('id') id: string, @Body() body: { status: 'APPROVED' | 'REJECTED' | 'INACTIVE' }) {
+    return this.usersService.updateStatus(id, body.status);
+  }
+
+  @UseGuards(AdminGuard)
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete user' })
+  @ApiResponse({ status: 200, description: 'Return deleted user' })
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
+}
