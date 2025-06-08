@@ -13,7 +13,7 @@ export class UsersService {
   ) {}
 
   async findAll(status?: string) {
-    const where = status ? { status } : {};
+    const where = status ? { status: status as any } : {};
     return this.prisma.user.findMany({
       where,
       include: {
@@ -149,7 +149,7 @@ export class UsersService {
   async getOpportunities(userId: string, status?: string) {
     const where = {
       userId,
-      ...(status && { status }),
+      ...(status && { status: status as any }),
     };
     
     return this.prisma.opportunityMatch.findMany({

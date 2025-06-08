@@ -29,7 +29,7 @@ export class NetworkingService {
     });
     
     // Create conversation pairs
-    const pairs = this.createConversationPairs(users, batchConfig);
+    const pairs = await this.createConversationPairs(users, batchConfig);
     
     // Process each pair
     const results = [];
@@ -56,7 +56,7 @@ export class NetworkingService {
     };
   }
 
-  private createConversationPairs(users, batchConfig) {
+  private async createConversationPairs(users, batchConfig) {
     const pairs = [];
     const maxPairsPerUser = batchConfig.conversations_per_agent;
     

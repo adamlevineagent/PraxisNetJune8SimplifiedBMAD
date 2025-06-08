@@ -7,9 +7,11 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { AdminLocalStrategy } from './strategies/admin-local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../../users/users.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({

@@ -32,7 +32,7 @@ export class OnboardingService {
       where: { userId },
     });
     
-    const currentMatrix = existingProfile?.positionMatrix || {
+    const currentMatrix = existingProfile?.positionMatrix as any || {
       archetype: '',
       skills: [],
       projects: [],

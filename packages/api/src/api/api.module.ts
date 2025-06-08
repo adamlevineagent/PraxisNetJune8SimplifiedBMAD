@@ -1,14 +1,10 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
-import { UsersController } from './users/users.controller';
-import { AdminController } from './admin/admin.controller';
-import { OnboardingController } from './onboarding/onboarding.controller';
-import { AuthService } from './auth/auth.service';
+import { UsersController } from '../users/users.controller';
+import { OnboardingController } from '../onboarding/onboarding.controller';
 import { UsersService } from '../users/users.service';
 import { OnboardingService } from '../onboarding/onboarding.service';
-import { AdminService } from '../admin/admin.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AiModule } from '../ai/ai.module';
 
@@ -16,27 +12,17 @@ import { AiModule } from '../ai/ai.module';
   imports: [
     PrismaModule,
     AiModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
-      }),
-      inject: [ConfigService],
-    }),
+    AuthModule,
   ],
   controllers: [
     AuthController,
     UsersController,
-    AdminController,
     OnboardingController,
   ],
   providers: [
-    AuthService,
     UsersService,
     OnboardingService,
-    AdminService,
   ],
-  exports: [AuthService],
+  exports: [],
 })
 export class ApiModule {}
