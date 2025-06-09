@@ -90,25 +90,30 @@ export default function ProvingGround1Page() {
 
     // Check system health
     checkSystemHealth();
-    const interval = setInterval(checkSystemHealth, 30000); // Check every 30 seconds
-    return () => clearInterval(interval);
+    fetchMetrics();
+    const healthInterval = setInterval(checkSystemHealth, 30000); // Check every 30 seconds
+    const metricsInterval = setInterval(fetchMetrics, 60000); // Check every minute
+    return () => {
+      clearInterval(healthInterval);
+      clearInterval(metricsInterval);
+    };
   }, []);
 
   const checkSystemHealth = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
       if (response.ok) {
         const data = await response.json();
         
         setSystemStatus({
-          database: data.status === 'healthy' && data.services?.database === 'connected',
-          ai: data.status === 'healthy' && data.services?.ai === 'operational',
-          auth: data.status === 'healthy' && data.services?.api === 'operational',
-          avgDbQuery: 12,
-          avgAiResponse: 1200,
+          database: data.services?.database?.status === 'healthy',
+          ai: data.services?.openrouter?.status === 'healthy',
+          auth: data.status === 'healthy',
+          avgDbQuery: data.services?.database?.responseTime || 12,
+          avgAiResponse: data.services?.openrouter?.responseTime || 1200,
         });
 
-        addConsoleMessage(`GET /health - 200 OK (${Date.now() % 100}ms)`);
+        addConsoleMessage(`GET /api/health - 200 OK (${data.services?.database?.responseTime || 0}ms)`);
       }
     } catch (error) {
       console.error('Health check failed:', error);
@@ -134,6 +139,34 @@ export default function ProvingGround1Page() {
       setSystemStatus(prev => ({ ...prev, ai: true }));
       addConsoleMessage('INFO: OpenRouter API connection restored');
     }, 5000);
+  };
+
+  const fetchMetrics = async () => {
+    try {
+      // For now, we'll use simulated metrics since we don't have admin access in the proving ground
+      // In a real implementation, this would fetch from /api/admin/metrics with proper auth
+      const simulatedMetrics = {
+        accountsCreated: Math.floor(Math.random() * 3) + metrics.accountsCreated,
+        agentsPersonalized: Math.floor(Math.random() * 3) + metrics.agentsPersonalized,
+        interviewsCompleted: Math.floor(Math.random() * 2) + metrics.interviewsCompleted,
+        essencesExtracted: Math.floor(Math.random() * 2) + metrics.essencesExtracted,
+        adminApprovalsProcessed: Math.floor(Math.random() * 2) + metrics.adminApprovalsProcessed,
+      };
+
+      setMetrics(prev => ({
+        ...prev,
+        ...simulatedMetrics,
+        accountCreation: 0.5 + Math.random() * 1, // 0.5-1.5s
+        aiResponseTime: 0.8 + Math.random() * 1.2, // 0.8-2.0s
+        essenceExtraction: 2.5 + Math.random() * 1.5, // 2.5-4.0s
+        totalOnboarding: 6 + Math.random() * 4, // 6-10 min
+      }));
+      
+      addConsoleMessage('INFO: Metrics updated');
+    } catch (error) {
+      console.error('Failed to fetch metrics:', error);
+      addConsoleMessage('WARNING: Failed to fetch metrics');
+    }
   };
 
   const simulateBrowserCrash = () => {
@@ -221,7 +254,7 @@ export default function ProvingGround1Page() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-                  <span>OpenRouter AI Connected (google/gemini-2.0-flash-exp)</span>
+                  <span>OpenRouter AI Connected (google/gemini-2.5-flash-preview-05-20)</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
@@ -231,13 +264,22 @@ export default function ProvingGround1Page() {
             </div>
           </div>
 
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-8 space-x-4">
             <Button
               size="lg"
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/proving-ground/1/demo')}
               className="flex items-center"
             >
-              Start Your Journey
+              Try Live Demo
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push('/auth/register')}
+              className="flex items-center"
+            >
+              Start Real Journey
               <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
