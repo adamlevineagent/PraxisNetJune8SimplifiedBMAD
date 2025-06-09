@@ -265,11 +265,13 @@ pnpm lint    # Run Next.js linter
 # API Package (.env)
 DATABASE_URL=postgresql://user:password@localhost:5432/praxis_network_dev
 JWT_SECRET=your-jwt-secret
-OPENROUTER_API_KEY=your-openrouter-api-key  # ⚠️ REQUIRED FOR AI
-SENDGRID_API_KEY=your-sendgrid-api-key
+OPENROUTER_API_KEY=your-openrouter-api-key  # ⚠️ REQUIRED FOR AI - get from global CLAUDE.md
+SENDGRID_API_KEY=your-sendgrid-api-key  # Production key - get from global CLAUDE.md
+EMAIL_FROM=noreply@prax.pro  # Production domain
 
 # Web Package (.env.local)
 NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_WS_URL=http://localhost:3001  # WebSocket URL (optional)
 ```
 
 ## Epic 1 Audit Requirements
