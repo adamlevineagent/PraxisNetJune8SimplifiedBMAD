@@ -252,6 +252,11 @@ export class UsersService {
     return bcrypt.compare(password, user.passwordHash);
   }
 
+  async isUsernameAvailable(username: string): Promise<boolean> {
+    const result = await this.checkHandleAvailability(username);
+    return result.available;
+  }
+
   async checkHandleAvailability(handle: string) {
     // Validate handle format
     const handleRegex = /^[a-zA-Z0-9_-]{3,50}$/;

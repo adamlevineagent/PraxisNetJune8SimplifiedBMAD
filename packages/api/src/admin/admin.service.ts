@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
+import { WebSocketGateway } from '../websocket/websocket.gateway';
 
 @Injectable()
 export class AdminService {
@@ -9,6 +10,8 @@ export class AdminService {
     private prisma: PrismaService,
     private configService: ConfigService,
     private emailService: EmailService,
+    @Inject(forwardRef(() => WebSocketGateway))
+    private webSocketGateway: WebSocketGateway,
   ) {}
 
   async getPendingUsers(page: number = 1, limit: number = 10) {
@@ -147,6 +150,13 @@ export class AdminService {
       handle: user.handle,
     });
 
+    // Send WebSocket notification to user
+    this.webSocketGateway.notifyUserStatusChange(
+      userId,
+      'APPROVED',
+      'Your account has been approved! Welcome to Praxis Network.',
+    );
+
     return { 
       message: 'User approved successfully',
       userId,
@@ -178,6 +188,13 @@ export class AdminService {
         handle: user.handle,
       },
       feedback
+    );
+
+    // Send WebSocket notification to user
+    this.webSocketGateway.notifyUserStatusChange(
+      userId,
+      'NEEDS_INFO',
+      'An admin has requested additional information. Please check your email.',
     );
 
     return { 

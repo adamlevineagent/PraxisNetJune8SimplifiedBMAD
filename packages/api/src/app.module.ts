@@ -11,6 +11,7 @@ import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { EmailModule } from './email/email.module';
 import { ProfessionalEssenceModule } from './professional-essence/professional-essence.module';
+import { WebSocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ProfessionalEssenceModule } from './professional-essence/professional-e
     HealthModule,
     EmailModule,
     ProfessionalEssenceModule,
+    WebSocketModule,
   ],
 })
 export class AppModule {}
