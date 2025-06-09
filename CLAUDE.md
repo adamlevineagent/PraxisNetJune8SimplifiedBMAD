@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 CRITICAL FIRST STEP 🚨
+**IMMEDIATELY after reading this CLAUDE.md file, you MUST read the entire long-term memory knowledge graph using the MCP memory server. Use the command `mcp__memory__read_graph` to access all stored project context, completed work, and critical system knowledge. This step is MANDATORY to maintain continuity and prevent re-doing completed work.**
+
 ## CRITICAL STATUS UPDATE - EPIC 1 PROGRESS
 
 **Last Update**: June 9, 2025 - 12:30 PM
