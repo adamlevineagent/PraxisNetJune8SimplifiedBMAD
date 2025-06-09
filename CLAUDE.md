@@ -7,9 +7,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## CRITICAL STATUS UPDATE - EPIC 1 PROGRESS
 
-**Last Update**: June 9, 2025 - 12:30 PM
-**Overall Status**: Epic 1 is 53% Complete (Issues 1-9 of 17 completed)
-**Next Steps**: Continue with Issue #10 - Scheduled job for nightly networking
+**Last Update**: January 9, 2025 - Comprehensive Audit Completed
+**Overall Status**: Epic 1 is 88% Complete (Backend: 95%, Frontend: 92%, Proving Ground: 0%)
+**Next Steps**: Focus on Issue #17 - Proving Ground implementation (critical for Epic 1 completion)
+
+### IMPORTANT SCOPE CLARIFICATION
+- **Epic 1**: First-Run Experience (onboarding, essence extraction, admin gating)
+- **Epic 2**: Nightly Networking Engine (scheduled jobs, matchmaking, agent conversations)
+- **Epic 3**: User Value Loop (morning reports, introductions, opportunities)
+- Issues #10, #11, #12 are OUT OF SCOPE for Epic 1 and belong to later epics
 
 ### Recent Accomplishments
 1. ✅ **Issues #1-9 Completed**: All critical infrastructure issues resolved
@@ -47,6 +53,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - AI conversational interview (`/onboard/interview`)
    - Conversation persistence to database
    - Professional essence extraction
+   - Profile editing (`/profile`) with full essence management
 
 3. **Admin Features**
    - Dashboard at `/admin/dashboard`
@@ -61,12 +68,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Agent-to-agent conversations (backend ready)
    - Morning reports (backend ready)
 
-### ⚠️ What Needs Work
-1. **Scheduled Jobs** - Nightly batch processing not implemented (Issue #10)
-2. **Introduction Requests** - Backend exists, frontend missing (Issue #11)
-3. **User Opportunity UI** - Frontend for managing opportunities (Issue #12)
-4. **Admin Features** - Conversation export, system config (Issues #13-14)
-5. **Monitoring** - Performance metrics and comprehensive testing (Issues #15-16)
+### ⚠️ What Needs Work (Epic 1 Only)
+1. **Proving Ground 1** - Demo pages exist but need functionality (Issue #17 - HIGH PRIORITY)
+2. **System Health Endpoint** - Missing `/api/health` endpoint for monitoring
+3. **Performance Monitoring** - Needed for Proving Ground metrics (Issue #15)
+4. **Minor Fixes**:
+   - Remove email requirement from registration (spec says username/password only)
+   - Verify all admin dashboard metrics are displayed
+5. **Optional Epic 1 Features** - Conversation export (Issue #13), System config (Issue #14)
 
 ## REMAINING WORK (Issues #10-17)
 
@@ -77,15 +86,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ Issue #8: Email service integration with admin flow
 - ✅ Issue #9: WebSocket support for real-time updates
 
-### Next Priority Issues
-- **Issue #10**: Implement scheduled job for nightly networking (NEXT PRIORITY)
-- **Issue #11**: Add introduction request handling
-- **Issue #12**: Create user opportunity management UI
-- **Issue #13**: Add conversation export for admins
-- **Issue #14**: Implement system configuration management
-- **Issue #15**: Add performance monitoring and metrics
-- **Issue #16**: Create comprehensive test suite
-- **Issue #17**: Final Epic 1 proving ground preparation
+### Epic 1 Priority Issues (In Order)
+1. **Issue #17**: Final Epic 1 proving ground preparation (CRITICAL - blocks Epic 1 completion)
+2. **Issue #15**: Add performance monitoring and metrics (needed for Proving Ground)
+3. **Fix Tasks**: 
+   - Implement `/api/health` endpoint
+   - Remove email from registration
+   - Verify admin metrics
+4. **Issue #16**: Create comprehensive test suite (good for Epic 1 completion)
+5. **Issue #13-14**: Optional - Admin features (conversation export, system config)
+
+### Out of Scope (Epic 2 & 3)
+- **Issue #10**: [EPIC 2] Scheduled job for nightly networking
+- **Issue #11**: [EPIC 3] Introduction request handling  
+- **Issue #12**: [EPIC 3] User opportunity management UI
 
 ## Project Overview
 
@@ -377,39 +391,29 @@ Before considering Epic 1 complete, perform complete audit against:
 4. **Testing**: FOLLOW THE TESTING FRAMEWORK ABOVE - run all tests before committing
 5. **Database**: Changes to schema require `npx prisma db push` in packages/api
 
+## EPIC 1 COMPLETION CHECKLIST
+
+### Must Complete for Epic 1
+- [ ] Proving Ground 1 fully functional (`/proving-ground/1`)
+- [ ] System health endpoint implemented (`/api/health`)
+- [ ] Performance metrics displayed in Proving Ground
+- [ ] Error simulation working in Proving Ground
+- [ ] Registration uses username/password only (remove email requirement)
+- [ ] All admin metrics verified and displayed
+
+### Success Criteria Status
+- ✅ User can sign up in under 60 seconds
+- ✅ Agent personalization creates emotional connection
+- ✅ Onboarding conversation feels natural and engaging
+- ✅ Professional Essence extraction achieves >60% completeness
+- ✅ Users understand and configure privacy layers
+- ✅ Admin can efficiently review and approve new users
+- ⚠️ 80%+ completion rate (needs measurement in Proving Ground)
+
+### Audit Report
+A comprehensive Epic 1 audit was completed on January 9, 2025. See `/EPIC_1_AUDIT_REPORT.md` for full details.
+
 ---
 
-**Current Status**: System is functional for Epic 1 stories. Continue with Issues #8-17 to complete full implementation.
+**Current Status**: Epic 1 is 88% complete. Focus on Issue #17 (Proving Ground) to complete Epic 1.
 
-## ISSUE #8 HANDOFF NOTES (NEXT DEVELOPER READ THIS!)
-
-**PRIORITY**: Issue #8 - Connect email service to admin approval flow
-
-**Current State**: 
-- ✅ SendGrid service configured in `/packages/api/src/email/email.service.ts`
-- ✅ Email templates ready: `sendWelcomeEmail()`, `sendNeedsInfoEmail()`
-- ✅ Admin approval endpoints exist in `/packages/api/src/admin/admin.controller.ts`
-- ⚠️ **Missing**: Connection between admin approval action and email sending
-
-**What Issue #8 Requires**:
-1. Modify admin approval endpoints to trigger email sending
-2. Test email integration (SendGrid sends real emails)
-3. Verify email templates render correctly
-4. Add error handling for email failures
-5. **FOLLOW TESTING FRAMEWORK**: Unit tests + integration tests + manual verification script
-
-**Technical Details**:
-- Admin endpoints: `POST /api/admin/users/:id/approve` and `POST /api/admin/users/:id/request-info`
-- Email service: Already imported and ready to use
-- Environment: SENDGRID_API_KEY needs to be set for real sending
-- Testing: Check email delivery in SendGrid dashboard
-
-**Files to Modify**:
-- `/packages/api/src/admin/admin.controller.ts` - Add email service calls
-- `/packages/api/src/admin/admin.service.ts` - Integrate email sending logic
-- Create tests following established pattern
-
-**Privacy Settings API (Issue #7) Reference**:
-- Commit: `6d5b318` - Shows complete implementation + testing pattern
-- Files: Look at `/packages/api/src/users/` for testing examples
-- GET `/api/users/:id/privacy` and PATCH `/api/users/:id/privacy` working perfectly
