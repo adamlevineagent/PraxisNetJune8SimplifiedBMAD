@@ -12,9 +12,9 @@ export class AiService {
   async getModelForTask(task: 'onboarding_interview' | 'agent_networking' | 'report_generation'): Promise<string> {
     // In a real implementation, this would fetch from the database or config service
     const defaultModels = {
-      onboarding_interview: 'google/gemini-2.5-flash',
-      agent_networking: 'google/gemini-2.5-flash',
-      report_generation: 'google/gemini-2.5-flash',
+      onboarding_interview: 'google/gemini-2.5-flash-preview-05-20',
+      agent_networking: 'google/gemini-2.5-flash-preview-05-20',
+      report_generation: 'google/gemini-2.5-flash-preview-05-20',
     };
     
     return defaultModels[task];

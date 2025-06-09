@@ -150,6 +150,23 @@ This is a monorepo using PNPM workspaces with the following structure:
 
 ## Development Commands
 
+### Quick Start Scripts (Recommended)
+```bash
+# Start development servers with proper port management
+./scripts/start-dev.sh    # Starts API (3001) and Web (3000) with logging
+
+# Stop all development servers
+./scripts/stop-dev.sh     # Gracefully stops all servers
+
+# Start servers and prepare for browser testing
+./scripts/test-browser.sh # Starts servers with testing guidance
+
+# Reset database (caution: deletes all data)
+./scripts/reset-db.sh     # Interactive database reset
+```
+
+**Note**: Logs are saved to `./logs/api.log` and `./logs/web.log` when using start-dev.sh
+
 ### Root Level (all packages)
 ```bash
 pnpm dev      # Start all dev servers in parallel

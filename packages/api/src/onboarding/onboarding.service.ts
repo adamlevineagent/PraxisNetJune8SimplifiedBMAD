@@ -127,16 +127,21 @@ export class OnboardingService {
     // Update user's Professional Essence
     await this.professionalEssenceService.updateProfessionalEssence(userId, essence);
 
-    // Update user status to pending approval and mark conversation as complete
+    // Update user status to pending approval
     await this.prisma.user.update({
       where: { id: userId },
       data: { 
         status: 'PENDING_APPROVAL',
-        onboardingData: {
-          ...(conversation as any),
-          status: 'COMPLETED',
-          completedAt: new Date(),
-        },
+        onboardingStage: 'AWAITING_APPROVAL',
+      },
+    });
+
+    // Mark conversation as complete in database
+    await this.prisma.onboardingConversation.update({
+      where: { conversationId },
+      data: {
+        status: 'COMPLETED',
+        completedAt: new Date(),
       },
     });
 
