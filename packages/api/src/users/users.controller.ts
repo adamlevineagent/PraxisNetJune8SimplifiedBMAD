@@ -27,6 +27,17 @@ export class UsersController {
     return this.usersService.checkHandleAvailability(handle);
   }
 
+  @Get('check-username/:username')
+  @ApiOperation({ summary: 'Check if username is available' })
+  @ApiResponse({ status: 200, description: 'Return username availability' })
+  async checkUsername(@Param('username') username: string) {
+    const available = await this.usersService.isUsernameAvailable(username);
+    return {
+      available,
+      message: available ? 'Username available' : 'Username already taken',
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()
