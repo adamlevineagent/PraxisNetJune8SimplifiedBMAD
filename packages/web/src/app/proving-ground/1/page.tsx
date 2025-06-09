@@ -267,10 +267,19 @@ export default function ProvingGround1Page() {
           <div className="flex justify-center mb-8 space-x-4">
             <Button
               size="lg"
+              onClick={() => router.push('/proving-ground/1/real-demo')}
+              className="flex items-center bg-green-600 hover:bg-green-700"
+            >
+              Try Real AI Demo
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+            <Button
+              size="lg"
+              variant="secondary"
               onClick={() => router.push('/proving-ground/1/demo')}
               className="flex items-center"
             >
-              Try Live Demo
+              Try Simulated Demo
               <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
             <Button
