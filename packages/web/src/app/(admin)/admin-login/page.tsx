@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
     try {
       await login(email, password);
       // Redirect to admin dashboard after successful login
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     } catch (error) {
       // Error is handled by the hook
     }
