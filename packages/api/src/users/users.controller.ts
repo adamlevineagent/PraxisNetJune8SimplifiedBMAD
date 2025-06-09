@@ -86,7 +86,23 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/privacy')
+  @Get(':id/privacy')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user privacy settings' })
+  @ApiResponse({ status: 200, description: 'Return privacy settings' })
+  getPrivacySettings(
+    @Param('id') id: string,
+    @Request() req,
+  ) {
+    // Ensure user can only get their own privacy settings
+    if (id !== req.user.id) {
+      throw new Error('Unauthorized');
+    }
+    return this.usersService.getPrivacySettings(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/privacy')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user privacy settings' })
   @ApiResponse({ status: 200, description: 'Return updated privacy settings' })
@@ -94,10 +110,10 @@ export class UsersController {
     @Param('id') id: string,
     @Request() req,
     @Body() body: {
-      narrativeLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
-      currentFocusLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
-      seekingConnectionsLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
-      offeringExpertiseLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      narrativeLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      currentFocusLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      seekingLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      offeringLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
     },
   ) {
     // Ensure user can only update their own privacy settings

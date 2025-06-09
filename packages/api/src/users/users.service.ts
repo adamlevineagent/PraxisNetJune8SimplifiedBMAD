@@ -273,11 +273,34 @@ export class UsersService {
     };
   }
 
+  async getPrivacySettings(userId: string) {
+    const settings = await this.prisma.privacySettings.findUnique({
+      where: { userId },
+    });
+
+    // If no settings exist, return default settings
+    if (!settings) {
+      return {
+        narrativeLevel: 'MEMBER',
+        currentFocusLevel: 'MEMBER',
+        seekingLevel: 'MEMBER',
+        offeringLevel: 'MEMBER',
+      };
+    }
+
+    return {
+      narrativeLevel: settings.narrativeLevel,
+      currentFocusLevel: settings.currentFocusLevel,
+      seekingLevel: settings.seekingLevel,
+      offeringLevel: settings.offeringLevel,
+    };
+  }
+
   async updatePrivacySettings(userId: string, settings: {
-    narrativeLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
-    currentFocusLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
-    seekingConnectionsLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
-    offeringExpertiseLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    narrativeLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    currentFocusLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    seekingLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    offeringLevel?: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
   }) {
     // Check if privacy settings exist
     const existing = await this.prisma.privacySettings.findUnique({
@@ -289,16 +312,22 @@ export class UsersService {
       return this.prisma.privacySettings.update({
         where: { userId },
         data: {
-          ...settings,
+          narrativeLevel: settings.narrativeLevel,
+          currentFocusLevel: settings.currentFocusLevel,
+          seekingLevel: settings.seekingLevel,
+          offeringLevel: settings.offeringLevel,
           updatedAt: new Date(),
         },
       });
     } else {
-      // Create new privacy settings
+      // Create new privacy settings with defaults
       return this.prisma.privacySettings.create({
         data: {
           userId,
-          ...settings,
+          narrativeLevel: settings.narrativeLevel || 'MEMBER',
+          currentFocusLevel: settings.currentFocusLevel || 'MEMBER',
+          seekingLevel: settings.seekingLevel || 'MEMBER',
+          offeringLevel: settings.offeringLevel || 'MEMBER',
         },
       });
     }
