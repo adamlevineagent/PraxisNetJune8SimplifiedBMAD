@@ -4,7 +4,7 @@ import { OnboardingService } from './onboarding.service';
 import { JwtAuthGuard } from '../api/auth/guards/jwt-auth.guard';
 
 @ApiTags('onboarding')
-@Controller('api/onboarding')
+@Controller('onboarding')
 export class OnboardingController {
   constructor(private readonly onboardingService: OnboardingService) {}
 

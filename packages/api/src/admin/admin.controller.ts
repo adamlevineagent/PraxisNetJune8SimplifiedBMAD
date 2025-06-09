@@ -4,7 +4,7 @@ import { AdminService } from './admin.service';
 import { AdminGuard } from '../api/auth/guards/admin.guard';
 
 @ApiTags('admin')
-@Controller('api/admin')
+@Controller('admin')
 @UseGuards(AdminGuard)
 @ApiBearerAuth()
 export class AdminController {
