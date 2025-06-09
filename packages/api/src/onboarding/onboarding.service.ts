@@ -54,6 +54,9 @@ export class OnboardingService {
 
     conversationState.transcript.push({ role: 'assistant', content: greeting });
 
+    // Save initial conversation state to database
+    await this.saveConversationState(conversationState);
+
     return {
       conversationId,
       greeting,
@@ -63,10 +66,15 @@ export class OnboardingService {
   }
 
   async processMessage(userId: string, conversationId: string, message: string) {
-    const conversation = this.conversations.get(conversationId);
+    let conversation = this.conversations.get(conversationId);
     
-    if (!conversation || conversation.userId !== userId) {
-      throw new NotFoundException('Conversation not found');
+    if (!conversation) {
+      // Try to load from database
+      conversation = await this.loadConversationState(userId, conversationId);
+      
+      if (!conversation || conversation.userId !== userId) {
+        throw new NotFoundException('Conversation not found');
+      }
     }
 
     // Add user message to transcript
@@ -85,6 +93,9 @@ export class OnboardingService {
     conversation.transcript.push({ role: 'assistant', content: aiResponse.content });
     conversation.turnCount++;
 
+    // Save updated conversation state
+    await this.saveConversationState(conversation);
+
     // Calculate progress
     const progress = this.calculateProgress(conversation);
 
@@ -97,10 +108,15 @@ export class OnboardingService {
   }
 
   async completeOnboarding(userId: string, conversationId: string) {
-    const conversation = this.conversations.get(conversationId);
+    let conversation = this.conversations.get(conversationId);
     
-    if (!conversation || conversation.userId !== userId) {
-      throw new NotFoundException('Conversation not found');
+    if (!conversation) {
+      // Try to load from database
+      conversation = await this.loadConversationState(userId, conversationId);
+      
+      if (!conversation || conversation.userId !== userId) {
+        throw new NotFoundException('Conversation not found');
+      }
     }
 
     // Extract Professional Essence from conversation
@@ -111,13 +127,20 @@ export class OnboardingService {
     // Update user's Professional Essence
     await this.professionalEssenceService.updateProfessionalEssence(userId, essence);
 
-    // Update user status to pending approval
+    // Update user status to pending approval and mark conversation as complete
     await this.prisma.user.update({
       where: { id: userId },
-      data: { status: 'PENDING_APPROVAL' },
+      data: { 
+        status: 'PENDING_APPROVAL',
+        onboardingData: {
+          ...(conversation as any),
+          status: 'COMPLETED',
+          completedAt: new Date(),
+        },
+      },
     });
 
-    // Clean up conversation state
+    // Clean up conversation state from memory
     this.conversations.delete(conversationId);
 
     return {
@@ -336,5 +359,115 @@ Guide the conversation naturally, asking follow-up questions to dive deeper into
     const matches = text.match(urlRegex);
     
     return matches ? matches[0] : '';
+  }
+
+  // Database persistence methods
+  private async saveConversationState(conversationState: ConversationState) {
+    try {
+      await this.prisma.onboardingConversation.upsert({
+        where: { 
+          conversationId: conversationState.conversationId 
+        },
+        create: {
+          userId: conversationState.userId,
+          conversationId: conversationState.conversationId,
+          agentName: conversationState.agentName,
+          communicationStyle: conversationState.communicationStyle,
+          transcript: conversationState.transcript,
+          turnCount: conversationState.turnCount,
+          startedAt: conversationState.startedAt,
+          status: 'IN_PROGRESS',
+        },
+        update: {
+          transcript: conversationState.transcript,
+          turnCount: conversationState.turnCount,
+          updatedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      console.error('Failed to save conversation state:', error);
+      // Don't throw - allow conversation to continue even if persistence fails
+    }
+  }
+
+  async loadConversationState(userId: string, conversationId: string): Promise<ConversationState | null> {
+    try {
+      const conversation = await this.prisma.onboardingConversation.findUnique({
+        where: { 
+          conversationId: conversationId,
+          userId: userId,
+        },
+      });
+
+      if (!conversation) {
+        return null;
+      }
+
+      // Restore conversation state from database
+      const conversationState: ConversationState = {
+        conversationId: conversation.conversationId,
+        userId: conversation.userId,
+        agentName: conversation.agentName,
+        communicationStyle: conversation.communicationStyle,
+        transcript: (conversation.transcript as any) || [],
+        turnCount: conversation.turnCount,
+        startedAt: conversation.startedAt,
+      };
+
+      // Add to memory cache
+      this.conversations.set(conversationId, conversationState);
+
+      return conversationState;
+    } catch (error) {
+      console.error('Failed to load conversation state:', error);
+      return null;
+    }
+  }
+
+  async cleanupAbandonedConversations() {
+    try {
+      // Find conversations older than 24 hours that are still in progress
+      const cutoffDate = new Date();
+      cutoffDate.setHours(cutoffDate.getHours() - 24);
+
+      const result = await this.prisma.onboardingConversation.updateMany({
+        where: {
+          status: 'IN_PROGRESS',
+          updatedAt: { lt: cutoffDate },
+        },
+        data: {
+          status: 'ABANDONED',
+          updatedAt: new Date(),
+        },
+      });
+
+      console.log(`Cleaned up ${result.count} abandoned conversations`);
+    } catch (error) {
+      console.error('Failed to cleanup abandoned conversations:', error);
+    }
+  }
+
+  async getConversationHistory(userId: string, conversationId: string) {
+    // First check memory cache
+    let conversation = this.conversations.get(conversationId);
+    
+    if (!conversation) {
+      // Try to load from database
+      conversation = await this.loadConversationState(userId, conversationId);
+      
+      if (!conversation || conversation.userId !== userId) {
+        throw new NotFoundException('Conversation not found');
+      }
+    }
+
+    return {
+      conversationId: conversation.conversationId,
+      agentName: conversation.agentName,
+      communicationStyle: conversation.communicationStyle,
+      transcript: conversation.transcript,
+      turnCount: conversation.turnCount,
+      startedAt: conversation.startedAt,
+      progress: this.calculateProgress(conversation),
+    };
   }
 }

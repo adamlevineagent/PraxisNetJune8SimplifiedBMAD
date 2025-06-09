@@ -29,6 +29,7 @@ model User {
   privacySettings     PrivacySettings?
   sentMatches         OpportunityMatch[] @relation("SentMatches")
   receivedMatches     OpportunityMatch[] @relation("ReceivedMatches")
+  onboardingConversation OnboardingConversation?
   
   @@index([email])
   @@index([handle])
@@ -220,4 +221,25 @@ model AdminActivity {
   @@index([targetId])
   @@index([action])
   @@index([createdAt])
+}
+
+model OnboardingConversation {
+  id                 String    @id @default(uuid())
+  userId             String    @unique
+  conversationId     String    @unique
+  agentName          String
+  communicationStyle String
+  transcript         Json      // Array of messages
+  turnCount          Int       @default(0)
+  status             String    @default("IN_PROGRESS")
+  completedAt        DateTime?
+  startedAt          DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([conversationId])
+  @@index([status])
 }

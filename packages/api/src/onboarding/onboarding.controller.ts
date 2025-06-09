@@ -93,4 +93,19 @@ export class OnboardingController {
       body.conversationHistory,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('history/:conversationId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get conversation history' })
+  @ApiResponse({ status: 200, description: 'Return conversation transcript' })
+  async getConversationHistory(
+    @Request() req,
+    @Param('conversationId') conversationId: string,
+  ) {
+    return this.onboardingService.getConversationHistory(
+      req.user.id,
+      conversationId,
+    );
+  }
 }
