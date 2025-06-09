@@ -45,7 +45,7 @@ export function ChatContainer({ children, className = '' }: ChatContainerProps) 
 
 interface ChatInputProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onSend: () => void;
   placeholder?: string;
   disabled?: boolean;

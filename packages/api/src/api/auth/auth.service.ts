@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/users.service';
 import * as bcrypt from 'bcrypt';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,8 +13,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
+  async validateUser(username: string, password: string): Promise<any> {
+    // Try to find by username first, then by email for backward compatibility
+    let user = await this.usersService.findByUsername(username);
+    if (!user) {
+      user = await this.usersService.findByEmail(username);
+    }
+    
     if (user && await this.usersService.validatePassword(user, password)) {
       const { passwordHash, ...result } = user;
       return result;
@@ -22,37 +28,37 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { username: user.handle, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
+        username: user.handle,
         email: user.email,
-        handle: user.handle,
         status: user.status,
         disclosureLevel: user.disclosureLevel,
       },
     };
   }
 
-  async register(email: string, password: string, handle: string, disclosureLevel: 'OPEN' | 'STEALTH' = 'STEALTH') {
-    // Check if email or handle already exists
-    const existingEmail = await this.usersService.findByEmail(email);
+  async register(dto: RegisterDto) {
+    // Check if username or email already exists
+    const existingUsername = await this.usersService.findByUsername(dto.username);
+    if (existingUsername) {
+      throw new BadRequestException('Username already in use');
+    }
+    
+    const existingEmail = await this.usersService.findByEmail(dto.email);
     if (existingEmail) {
-      throw new Error('Email already in use');
+      throw new BadRequestException('Email already in use');
     }
     
-    const existingHandle = await this.usersService.findByHandle(handle);
-    if (existingHandle) {
-      throw new Error('Handle already in use');
-    }
-    
-    // Create user
+    // Create user with username as handle
     const user = await this.usersService.create({
-      email,
-      password,
-      handle,
-      disclosureLevel,
+      email: dto.email,
+      password: dto.password,
+      handle: dto.username, // Use username as handle
+      disclosureLevel: 'STEALTH', // Default to stealth
     });
     
     // Return token and user info

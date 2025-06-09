@@ -14,19 +14,25 @@ model User {
   id              String          @id @default(uuid())
   email           String          @unique
   handle          String          @unique
+  username        String          // For auth, defaults to handle
   passwordHash    String
   disclosureLevel DisclosureLevel @default(STEALTH)
   status          UserStatus      @default(PENDING)
+  onboardingStage OnboardingStage @default(HANDLE_SELECTION)
+  approvedAt      DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   
   // Relations
   profile         AgentProfile?
+  professionalEssence ProfessionalEssence?
+  privacySettings PrivacySettings?
   sentMatches     OpportunityMatch[] @relation("SentMatches")
   receivedMatches OpportunityMatch[] @relation("ReceivedMatches")
   
   @@index([email])
   @@index([handle])
+  @@index([username])
   @@index([status])
 }
 
@@ -37,17 +43,30 @@ enum DisclosureLevel {
 
 enum UserStatus {
   PENDING
+  PENDING_APPROVAL
   APPROVED
   REJECTED
+  NEEDS_INFO
   INACTIVE
 }
 
+enum OnboardingStage {
+  HANDLE_SELECTION
+  PRIVACY_SETUP
+  AGENT_NAMING
+  PROFESSIONAL_ESSENCE
+  AWAITING_APPROVAL
+  COMPLETED
+}
+
 model AgentProfile {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  positionMatrix Json     // JSONB in PostgreSQL
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  name               String?
+  communicationStyle String?
+  positionMatrix     Json     // JSONB in PostgreSQL
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   
   // Relations
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -134,6 +153,9 @@ model AdminUser {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
+  // Relations
+  activities   AdminActivity[]
+  
   @@index([email])
 }
 
@@ -150,4 +172,61 @@ model SystemConfig {
   updatedAt DateTime @updatedAt
   
   @@index([key])
+}
+
+model ProfessionalEssence {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  narrative          String   @db.Text
+  currentFocus       Json     // Array of focus areas
+  seekingConnections Json     // Array of what they're seeking
+  offeringExpertise  Json     // Array of what they're offering
+  metadata           Json     // Completeness, themes, etc.
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  // Relations
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model PrivacySettings {
+  id                       String   @id @default(uuid())
+  userId                   String   @unique
+  narrativeLayer          PrivacyLayer @default(MEMBER)
+  currentFocusLayer       PrivacyLayer @default(MEMBER)
+  seekingConnectionsLayer PrivacyLayer @default(MEMBER)
+  offeringExpertiseLayer  PrivacyLayer @default(MEMBER)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  // Relations
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+enum PrivacyLayer {
+  PUBLIC     // Visible to all logged-in users
+  MEMBER     // Visible to members only
+  TRUSTED    // Visible only to users with mutual matches
+}
+
+model AdminActivity {
+  id          String   @id @default(uuid())
+  adminId     String
+  action      String   // USER_APPROVED, INFO_REQUESTED, etc.
+  targetId    String?  // ID of affected user/resource
+  metadata    Json?    // Additional context
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  admin       AdminUser @relation(fields: [adminId], references: [id])
+  
+  @@index([adminId])
+  @@index([action])
+  @@index([targetId])
+  @@index([createdAt])
 }

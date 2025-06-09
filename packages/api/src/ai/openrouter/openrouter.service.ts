@@ -13,7 +13,7 @@ export class OpenRouterService {
 
   async generateCompletion(
     prompt: string,
-    model: string = 'gpt-4',
+    model: string = 'google/gemini-2.5-flash',
     temperature: number = 0.7,
     maxTokens: number = 1000,
   ) {
@@ -43,7 +43,7 @@ export class OpenRouterService {
 
   async generateConversation(
     messages: Array<{ role: string; content: string }>,
-    model: string = 'gpt-4',
+    model: string = 'google/gemini-2.5-flash',
     temperature: number = 0.7,
     maxTokens: number = 1000,
   ) {

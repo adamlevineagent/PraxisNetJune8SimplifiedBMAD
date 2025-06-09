@@ -7,12 +7,16 @@ import { UsersService } from '../users/users.service';
 import { OnboardingService } from '../onboarding/onboarding.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AiModule } from '../ai/ai.module';
+import { AgentsModule } from '../agents/agents.module';
+import { ProfessionalEssenceModule } from '../professional-essence/professional-essence.module';
 
 @Module({
   imports: [
     PrismaModule,
     AiModule,
     AuthModule,
+    AgentsModule,
+    ProfessionalEssenceModule,
   ],
   controllers: [
     AuthController,

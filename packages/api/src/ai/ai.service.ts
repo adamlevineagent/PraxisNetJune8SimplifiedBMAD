@@ -12,9 +12,9 @@ export class AiService {
   async getModelForTask(task: 'onboarding_interview' | 'agent_networking' | 'report_generation'): Promise<string> {
     // In a real implementation, this would fetch from the database or config service
     const defaultModels = {
-      onboarding_interview: 'gpt-4',
-      agent_networking: 'claude-3-opus',
-      report_generation: 'gpt-4',
+      onboarding_interview: 'google/gemini-2.5-flash',
+      agent_networking: 'google/gemini-2.5-flash',
+      report_generation: 'google/gemini-2.5-flash',
     };
     
     return defaultModels[task];
@@ -82,5 +82,64 @@ Format the email with appropriate HTML tags for a clean presentation.
 `;
     
     return this.openRouterService.generateCompletion(prompt, model);
+  }
+
+  async extractProfessionalEssence(conversationTranscript: any[]) {
+    const model = await this.getModelForTask('onboarding_interview');
+    
+    const prompt = `
+Analyze the following conversational interview transcript and extract the user's "Professional Essence".
+
+Conversation Transcript:
+${JSON.stringify(conversationTranscript, null, 2)}
+
+Extract and structure the following information:
+
+1. Narrative: A compelling 2-3 paragraph summary of who this person is professionally, their journey, and what drives them.
+
+2. Current Focus: 3-5 specific areas they're actively working on or interested in.
+
+3. Seeking Connections: 3-5 types of people, skills, or opportunities they're looking to connect with.
+
+4. Offering Expertise: 3-5 areas where they can provide value to others.
+
+Return the response in the following JSON format:
+{
+  "narrative": "string",
+  "currentFocus": ["string", "string", ...],
+  "seekingConnections": ["string", "string", ...],
+  "offeringExpertise": ["string", "string", ...],
+  "metadata": {
+    "completeness": number (0.0 to 1.0)
+  }
+}
+
+Be specific and actionable in your extraction. Focus on concrete skills, experiences, and goals rather than generic statements.
+`;
+    
+    const response = await this.openRouterService.generateCompletion(prompt, model);
+    
+    try {
+      // Try to parse as JSON directly
+      return JSON.parse(response);
+    } catch (error) {
+      // If parsing fails, extract JSON from the response
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      
+      // Fallback: create a basic structure
+      return {
+        narrative: response,
+        currentFocus: [],
+        seekingConnections: [],
+        offeringExpertise: [],
+        metadata: {
+          completeness: 0.3,
+          lastUpdated: new Date()
+        }
+      };
+    }
   }
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { RegistrationForm } from '../components/RegistrationForm';
 
 export default function LandingPage() {
   return (
@@ -22,30 +23,8 @@ export default function LandingPage() {
                 Praxis Network provides every builder and dreamer with a tireless, loyal AI representative
                 that discovers opportunities you'd never find on your own.
               </p>
-              <div className="mt-8 max-w-md mx-auto">
-                <form className="sm:flex">
-                  <label htmlFor="email" className="sr-only">Email address</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="w-full px-5 py-3 border border-background-secondary rounded-md text-text-primary bg-background-secondary focus:ring-2 focus:ring-accent-primary focus:outline-none"
-                    placeholder="Enter your email"
-                  />
-                  <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <button
-                      type="submit"
-                      className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-background-primary bg-accent-primary hover:bg-accent-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary"
-                    >
-                      Get Started
-                    </button>
-                  </div>
-                </form>
-                <p className="mt-3 text-sm text-text-secondary">
-                  Join our curated network of builders, visionaries, specialists, and connectors.
-                </p>
+              <div className="mt-8">
+                <RegistrationForm />
               </div>
             </div>
           </div>
@@ -81,6 +60,11 @@ export default function LandingPage() {
         <div className="container-custom">
           <div className="text-center text-text-secondary">
             <p>&copy; {new Date().getFullYear()} Praxis Network. All rights reserved.</p>
+            <div className="mt-2">
+              <Link href="/login" className="text-xs text-text-secondary hover:text-accent-primary opacity-50 hover:opacity-100">
+                Admin
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

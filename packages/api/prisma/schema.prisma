@@ -1,0 +1,223 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String          @id @default(uuid())
+  email           String          @unique
+  handle          String          @unique
+  username        String?         @unique
+  passwordHash    String
+  disclosureLevel DisclosureLevel @default(STEALTH)
+  status          UserStatus      @default(PENDING)
+  onboardingStage OnboardingStage @default(HANDLE_SELECTION)
+  approvedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  profile             AgentProfile?
+  professionalEssence ProfessionalEssence?
+  privacySettings     PrivacySettings?
+  sentMatches         OpportunityMatch[] @relation("SentMatches")
+  receivedMatches     OpportunityMatch[] @relation("ReceivedMatches")
+  
+  @@index([email])
+  @@index([handle])
+  @@index([status])
+}
+
+enum DisclosureLevel {
+  OPEN
+  STEALTH
+}
+
+enum UserStatus {
+  PENDING
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  NEEDS_INFO
+  INACTIVE
+}
+
+model AgentProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  name               String?
+  communicationStyle String?
+  positionMatrix     Json     // JSONB in PostgreSQL
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  // Relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  participantIn  ConversationParticipant[]
+  
+  @@index([userId])
+}
+
+model ConversationLog {
+  id          String   @id @default(uuid())
+  ranAt       DateTime @default(now())
+  transcript  String   @db.Text
+  outcomes    Json?    // JSONB in PostgreSQL
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  participants ConversationParticipant[]
+  matches      OpportunityMatch[]
+  
+  @@index([ranAt])
+}
+
+model ConversationParticipant {
+  id              String        @id @default(uuid())
+  conversationId  String
+  profileId       String
+  
+  // Relations
+  conversation    ConversationLog @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  profile         AgentProfile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  @@unique([conversationId, profileId])
+  @@index([conversationId])
+  @@index([profileId])
+}
+
+model OpportunityMatch {
+  id             String           @id @default(uuid())
+  conversationId String
+  userId         String
+  targetUserId   String
+  status         OpportunityStatus @default(PENDING)
+  summary        String           @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  
+  // Relations
+  conversation   ConversationLog  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User             @relation("ReceivedMatches", fields: [userId], references: [id], onDelete: Cascade)
+  targetUser     User             @relation("SentMatches", fields: [targetUserId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, targetUserId, conversationId])
+  @@index([conversationId])
+  @@index([userId])
+  @@index([targetUserId])
+  @@index([status])
+}
+
+enum OpportunityStatus {
+  PENDING
+  INTERESTED
+  NOT_INTERESTED
+  MUTUAL
+  INTRODUCED
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([email])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([email])
+}
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+model SystemConfig {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json     // JSONB in PostgreSQL
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([key])
+}
+
+enum OnboardingStage {
+  HANDLE_SELECTION
+  PRIVACY_SETUP
+  AGENT_NAMING
+  PROFESSIONAL_ESSENCE
+  AWAITING_APPROVAL
+  COMPLETED
+}
+
+model ProfessionalEssence {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  narrative          String   @db.Text
+  currentFocus       Json     // Array of focus areas
+  seekingConnections Json     // Array of what they're seeking
+  offeringExpertise  Json     // Array of what they're offering
+  metadata           Json     // Completeness, themes, etc.
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model PrivacySettings {
+  id                 String       @id @default(uuid())
+  userId             String       @unique
+  narrativeLevel     PrivacyLevel @default(MEMBER)
+  currentFocusLevel  PrivacyLevel @default(MEMBER)
+  seekingLevel       PrivacyLevel @default(MEMBER)
+  offeringLevel      PrivacyLevel @default(MEMBER)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+enum PrivacyLevel {
+  PUBLIC
+  MEMBER
+  TRUSTED
+}
+
+model AdminActivity {
+  id        String   @id @default(uuid())
+  adminId   String
+  action    String
+  targetId  String
+  notes     String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  
+  @@index([adminId])
+  @@index([targetId])
+  @@index([action])
+  @@index([createdAt])
+}

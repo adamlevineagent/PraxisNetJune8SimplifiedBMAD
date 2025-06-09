@@ -49,6 +49,11 @@ export class UsersService {
     });
   }
 
+  async findByUsername(username: string) {
+    // Username is stored as handle in the database
+    return this.findByHandle(username);
+  }
+
   async create(createUserDto: CreateUserDto) {
     const { email, password, handle, disclosureLevel } = createUserDto;
     
@@ -72,8 +77,10 @@ export class UsersService {
         email,
         passwordHash,
         handle,
+        username: handle, // Default username to handle
         disclosureLevel,
         status: 'PENDING',
+        onboardingStage: 'HANDLE_SELECTION',
       },
     });
   }
@@ -243,5 +250,112 @@ export class UsersService {
 
   async validatePassword(user: any, password: string): Promise<boolean> {
     return bcrypt.compare(password, user.passwordHash);
+  }
+
+  async checkHandleAvailability(handle: string) {
+    // Validate handle format
+    const handleRegex = /^[a-zA-Z0-9_-]{3,50}$/;
+    if (!handleRegex.test(handle)) {
+      return {
+        available: false,
+        reason: 'Handle must be 3-50 characters and contain only letters, numbers, underscores, and hyphens',
+      };
+    }
+
+    // Check if handle exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { handle },
+    });
+
+    return {
+      available: !existingUser,
+      handle,
+    };
+  }
+
+  async updatePrivacySettings(userId: string, settings: {
+    narrativeLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    currentFocusLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    seekingConnectionsLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    offeringExpertiseLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+  }) {
+    // Check if privacy settings exist
+    const existing = await this.prisma.privacySettings.findUnique({
+      where: { userId },
+    });
+
+    if (existing) {
+      // Update existing privacy settings
+      return this.prisma.privacySettings.update({
+        where: { userId },
+        data: {
+          ...settings,
+          updatedAt: new Date(),
+        },
+      });
+    } else {
+      // Create new privacy settings
+      return this.prisma.privacySettings.create({
+        data: {
+          userId,
+          ...settings,
+        },
+      });
+    }
+  }
+
+  async updateOnboardingStage(userId: string, stage: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { onboardingStage: stage as any },
+    });
+  }
+
+  async getOnboardingStatus(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        onboardingStage: true,
+        status: true,
+        handle: true,
+        profile: true,
+        professionalEssence: true,
+        privacySettings: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Determine the next step based on current stage and data
+    let nextStep = '';
+    switch (user.onboardingStage) {
+      case 'HANDLE_SELECTION':
+        nextStep = '/onboard/handle';
+        break;
+      case 'PRIVACY_SETUP':
+        nextStep = '/onboard/privacy';
+        break;
+      case 'AGENT_NAMING':
+        nextStep = '/onboard/agent';
+        break;
+      case 'PROFESSIONAL_ESSENCE':
+        nextStep = '/onboard/personalize';
+        break;
+      case 'AWAITING_APPROVAL':
+        nextStep = '/dashboard';
+        break;
+      case 'COMPLETED':
+        nextStep = '/dashboard';
+        break;
+    }
+
+    return {
+      stage: user.onboardingStage,
+      status: user.status,
+      nextStep,
+      isComplete: user.onboardingStage === 'COMPLETED',
+    };
   }
 }

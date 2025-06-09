@@ -20,6 +20,13 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('check-handle/:handle')
+  @ApiOperation({ summary: 'Check if handle is available' })
+  @ApiResponse({ status: 200, description: 'Return handle availability' })
+  async checkHandle(@Param('handle') handle: string) {
+    return this.usersService.checkHandleAvailability(handle);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()
@@ -27,6 +34,24 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return the current user profile' })
   getProfile(@Request() req) {
     return this.usersService.findOne(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('onboarding-status')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get onboarding status for current user' })
+  @ApiResponse({ status: 200, description: 'Return onboarding status' })
+  getOnboardingStatus(@Request() req) {
+    return this.usersService.getOnboardingStatus(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('onboarding-stage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update onboarding stage for current user' })
+  @ApiResponse({ status: 200, description: 'Return updated user' })
+  updateOnboardingStage(@Request() req, @Body() body: { stage: string }) {
+    return this.usersService.updateOnboardingStage(req.user.id, body.stage);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -58,6 +83,28 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return updated profile' })
   updateProfile(@Request() req, @Body() body: { positionMatrix: any }) {
     return this.usersService.updateProfile(req.user.id, body.positionMatrix);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/privacy')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user privacy settings' })
+  @ApiResponse({ status: 200, description: 'Return updated privacy settings' })
+  updatePrivacySettings(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() body: {
+      narrativeLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      currentFocusLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      seekingConnectionsLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+      offeringExpertiseLayer: 'PUBLIC' | 'MEMBER' | 'TRUSTED';
+    },
+  ) {
+    // Ensure user can only update their own privacy settings
+    if (id !== req.user.id) {
+      throw new Error('Unauthorized');
+    }
+    return this.usersService.updatePrivacySettings(id, body);
   }
 
   @UseGuards(AdminGuard)
