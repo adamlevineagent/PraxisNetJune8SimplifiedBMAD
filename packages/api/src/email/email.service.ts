@@ -15,21 +15,28 @@ export class EmailService {
     const apiKey = this.configService.get<string>('SENDGRID_API_KEY');
     if (apiKey) {
       sgMail.setApiKey(apiKey);
+      console.log('✅ SendGrid configured with API key');
+    } else {
+      console.log('⚠️  SendGrid API key not set - emails will be logged only');
     }
   }
 
   async sendEmail(template: EmailTemplate): Promise<void> {
     const from = this.configService.get<string>('EMAIL_FROM') || 'noreply@praxisnetwork.ai';
     const isDevelopment = this.configService.get<string>('NODE_ENV') === 'development';
+    const hasApiKey = !!this.configService.get<string>('SENDGRID_API_KEY');
 
-    if (isDevelopment) {
-      // In development, just log the email
+    if (isDevelopment || !hasApiKey) {
+      // In development or without API key, just log the email
       console.log('📧 Email would be sent:', {
         to: template.to,
         from,
         subject: template.subject,
         preview: template.text.substring(0, 100) + '...',
       });
+      if (!isDevelopment && !hasApiKey) {
+        console.warn('⚠️  Production mode but no SendGrid API key - email not sent!');
+      }
       return;
     }
 

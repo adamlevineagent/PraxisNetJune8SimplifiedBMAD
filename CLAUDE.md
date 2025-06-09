@@ -4,17 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## CRITICAL STATUS UPDATE - EPIC 1 PROGRESS
 
-**Last Update**: June 9, 2025
-**Overall Status**: Epic 1 is 85% Complete (Backend: 95%, Frontend: 75%)
-**Next Steps**: Complete remaining issues #7-17 for full Epic 1 implementation
+**Last Update**: June 9, 2025 - 10:45 AM
+**Overall Status**: Epic 1 is 90% Complete (Backend: 98%, Frontend: 75%)
+**Next Steps**: Complete remaining issues #8-17 for full Epic 1 implementation
 
 ### Recent Accomplishments
-1. ✅ **Issues #1-6 Completed**: All critical infrastructure issues resolved
+1. ✅ **Issues #1-7 Completed**: All critical infrastructure + privacy API issues resolved
 2. ✅ **AI Integration Working**: OpenRouter configured with `google/gemini-2.5-flash-preview-05-20` model
 3. ✅ **Database Schema Complete**: All Epic 1 tables created and functional
 4. ✅ **Conversation Persistence**: AI conversations now persist to PostgreSQL
 5. ✅ **Frontend Routing Fixed**: All pages restored, routes properly configured
 6. ✅ **Development Scripts**: Created helper scripts in `/scripts` for easier development
+7. ✅ **Testing Framework**: Comprehensive testing strategy established and proven
+8. ✅ **Privacy Settings API**: Full CRUD operations for user privacy settings
 
 ### System Architecture Overview
 - **Monorepo**: PNPM workspaces with packages/api (NestJS) and packages/web (Next.js 14)
@@ -55,17 +57,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Morning reports (backend ready)
 
 ### ⚠️ What Needs Work
-1. **Email Integration** - SendGrid configured but not sending
+1. **Email Integration** - SendGrid configured but not sending (NEXT PRIORITY: Issue #8)
 2. **Scheduled Jobs** - Nightly batch processing not implemented
 3. **WebSocket/Real-time** - Not implemented
-4. **Privacy Settings API** - Endpoint missing
-5. **Introduction Requests** - Backend exists, frontend missing
+4. **Introduction Requests** - Backend exists, frontend missing
 
-## REMAINING WORK (Issues #7-17)
+## REMAINING WORK (Issues #8-17)
 
 ### Next Priority Issues
-- **Issue #7**: Add privacy settings API endpoint `/api/users/:id/privacy`
-- **Issue #8**: Connect email service to admin approval flow
+- **Issue #8**: Connect email service to admin approval flow (NEXT PRIORITY)
+- **Issue #9**: Add WebSocket support for real-time updates
 - **Issue #9**: Add WebSocket support for real-time updates
 - **Issue #10**: Implement scheduled job for nightly networking
 - **Issue #11**: Add introduction request handling
@@ -217,7 +218,7 @@ pnpm lint    # Run Next.js linter
 - **Error Handling**: Comprehensive error states
 
 
-## COMPLETED ISSUES (1-6)
+## COMPLETED ISSUES (1-7)
 
 - ✅ **Issue #1**: Fix admin auth hook to expose token (b37d326)
 - ✅ **Issue #2**: Create user dashboard component (b9c4211)
@@ -225,6 +226,7 @@ pnpm lint    # Run Next.js linter
 - ✅ **Issue #4**: Fix type imports and definitions (73fd0c6)
 - ✅ **Issue #5**: Test and fix frontend build process
 - ✅ **Issue #6**: Persist AI conversations to database (5656135)
+- ✅ **Issue #7**: Add privacy settings API endpoints (6d5b318)
 
 ## GETTING STARTED FOR NEW DEVELOPERS
 
@@ -325,14 +327,75 @@ Before considering Epic 1 complete, perform complete audit against:
 - AI Integration: `/praxisnetwork2 sprintplan/docs/PROMPTS_AND_AI.md`
 - Operations: `/praxisnetwork2 sprintplan/docs/OPERATIONS_GUIDE.md`
 
+## CRITICAL TESTING FRAMEWORK (ESTABLISHED JUNE 9, 2025)
+
+**⚠️ MANDATORY: Follow this testing pattern for ALL new issues - no exceptions!**
+
+### Required Testing Steps (for every issue):
+1. **Implement** the feature/fix according to specifications
+2. **Unit Tests**: Create `feature-name.spec.ts` with mocked dependencies
+3. **Integration Tests**: Test real API endpoints (optional but recommended)
+4. **Manual Verification**: Create `verify-feature-name.js` script for live testing
+5. **Test Execution**: Run tests and verify against running server
+6. **Documentation**: Commit with detailed testing evidence
+
+### Testing Examples (Use as Templates):
+- **Unit Tests**: `/packages/api/src/users/users.controller.spec.ts`
+- **Integration Tests**: `/packages/api/src/users/privacy-settings.spec.ts`
+- **Manual Verification**: `/packages/api/src/users/verify-privacy-settings.js`
+
+### Critical Testing Notes:
+- **bcrypt Fix**: If you get bcrypt errors, run `cd packages/api && pnpm rebuild`
+- **Test Patterns**: Jest expects `*.spec.ts` files in src/ directory
+- **Manual Scripts**: Create Node.js scripts that test live endpoints
+- **Verification**: Each script should test happy path, error cases, and auth
+
+### Issue #7 Testing Reference:
+- Commit `6d5b318` shows complete testing implementation
+- GET/PATCH endpoints fully tested with unit + integration + manual verification
+- Authentication, defaults, partial updates, and error handling all covered
+
 ## CRITICAL NOTES FOR DEVELOPERS
 
 1. **API Routes**: All controllers use relative paths. Global prefix 'api' is set in main.ts
 2. **AI Model**: Must use `google/gemini-2.5-flash-preview-05-20` - set in three places
 3. **Development**: Always use `./scripts/start-dev.sh` to avoid port conflicts
-4. **Testing**: Run `./scripts/test-api.sh` to verify AI integration
+4. **Testing**: FOLLOW THE TESTING FRAMEWORK ABOVE - run all tests before committing
 5. **Database**: Changes to schema require `npx prisma db push` in packages/api
 
 ---
 
-**Current Status**: System is functional for Epic 1 stories. Continue with Issues #7-17 to complete full implementation.
+**Current Status**: System is functional for Epic 1 stories. Continue with Issues #8-17 to complete full implementation.
+
+## ISSUE #8 HANDOFF NOTES (NEXT DEVELOPER READ THIS!)
+
+**PRIORITY**: Issue #8 - Connect email service to admin approval flow
+
+**Current State**: 
+- ✅ SendGrid service configured in `/packages/api/src/email/email.service.ts`
+- ✅ Email templates ready: `sendWelcomeEmail()`, `sendNeedsInfoEmail()`
+- ✅ Admin approval endpoints exist in `/packages/api/src/admin/admin.controller.ts`
+- ⚠️ **Missing**: Connection between admin approval action and email sending
+
+**What Issue #8 Requires**:
+1. Modify admin approval endpoints to trigger email sending
+2. Test email integration (SendGrid sends real emails)
+3. Verify email templates render correctly
+4. Add error handling for email failures
+5. **FOLLOW TESTING FRAMEWORK**: Unit tests + integration tests + manual verification script
+
+**Technical Details**:
+- Admin endpoints: `POST /api/admin/users/:id/approve` and `POST /api/admin/users/:id/request-info`
+- Email service: Already imported and ready to use
+- Environment: SENDGRID_API_KEY needs to be set for real sending
+- Testing: Check email delivery in SendGrid dashboard
+
+**Files to Modify**:
+- `/packages/api/src/admin/admin.controller.ts` - Add email service calls
+- `/packages/api/src/admin/admin.service.ts` - Integrate email sending logic
+- Create tests following established pattern
+
+**Privacy Settings API (Issue #7) Reference**:
+- Commit: `6d5b318` - Shows complete implementation + testing pattern
+- Files: Look at `/packages/api/src/users/` for testing examples
+- GET `/api/users/:id/privacy` and PATCH `/api/users/:id/privacy` working perfectly
