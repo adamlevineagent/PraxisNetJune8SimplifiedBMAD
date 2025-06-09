@@ -7,15 +7,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## CRITICAL STATUS UPDATE - EPIC 1 PROGRESS
 
-**Last Update**: January 9, 2025 - Comprehensive Audit Completed
+**Last Update**: January 9, 2025 - GitHub Issues Organized
 **Overall Status**: Epic 1 is 88% Complete (Backend: 95%, Frontend: 92%, Proving Ground: 0%)
-**Next Steps**: Focus on Issue #17 - Proving Ground implementation (critical for Epic 1 completion)
+**Next Steps**: Focus on Issue #21 - Complete Proving Ground 1 functionality (CRITICAL for Epic 1 completion)
 
 ### IMPORTANT SCOPE CLARIFICATION
 - **Epic 1**: First-Run Experience (onboarding, essence extraction, admin gating)
 - **Epic 2**: Nightly Networking Engine (scheduled jobs, matchmaking, agent conversations)
 - **Epic 3**: User Value Loop (morning reports, introductions, opportunities)
-- Issues #10, #11, #12 are OUT OF SCOPE for Epic 1 and belong to later epics
+- **Epic 4**: Admin Toolkit (system configuration, conversation export, advanced metrics)
 
 ### Recent Accomplishments
 1. ✅ **Issues #1-9 Completed**: All critical infrastructure issues resolved
@@ -69,15 +69,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Morning reports (backend ready)
 
 ### ⚠️ What Needs Work (Epic 1 Only)
-1. **Proving Ground 1** - Demo pages exist but need functionality (Issue #17 - HIGH PRIORITY)
-2. **System Health Endpoint** - Missing `/api/health` endpoint for monitoring
+1. **Proving Ground 1** - Demo pages exist but need functionality (Issue #21 - CRITICAL PRIORITY)
+2. **System Health Endpoint** - Missing `/api/health` endpoint for monitoring (Issue #19)
 3. **Performance Monitoring** - Needed for Proving Ground metrics (Issue #15)
 4. **Minor Fixes**:
-   - Remove email requirement from registration (spec says username/password only)
-   - Verify all admin dashboard metrics are displayed
-5. **Optional Epic 1 Features** - Conversation export (Issue #13), System config (Issue #14)
+   - Remove email requirement from registration (Issue #18)
+   - Verify all admin dashboard metrics are displayed (Issue #20)
+5. **Testing & Documentation** - Full end-to-end testing (Issue #13), Demo flow docs (Issue #16)
 
-## REMAINING WORK (Issues #10-17)
+## GITHUB ISSUES STATUS
 
 ### Completed Issues (1-9)
 - ✅ Issue #1-4: Infrastructure fixes (auth, routes, types, dashboard)
@@ -86,20 +86,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ Issue #8: Email service integration with admin flow
 - ✅ Issue #9: WebSocket support for real-time updates
 
-### Epic 1 Priority Issues (In Order)
-1. **Issue #17**: Final Epic 1 proving ground preparation (CRITICAL - blocks Epic 1 completion)
-2. **Issue #15**: Add performance monitoring and metrics (needed for Proving Ground)
-3. **Fix Tasks**: 
-   - Implement `/api/health` endpoint
-   - Remove email from registration
-   - Verify admin metrics
-4. **Issue #16**: Create comprehensive test suite (good for Epic 1 completion)
-5. **Issue #13-14**: Optional - Admin features (conversation export, system config)
+### Epic 1 Open Issues (10-21) - All labeled `epic-1`
+**Critical Priority:**
+- **Issue #21**: Complete Proving Ground 1 functionality (BLOCKS EPIC 1 COMPLETION)
+- **Issue #19**: Implement /api/health endpoint for system monitoring
 
-### Out of Scope (Epic 2 & 3)
-- **Issue #10**: [EPIC 2] Scheduled job for nightly networking
-- **Issue #11**: [EPIC 3] Introduction request handling  
-- **Issue #12**: [EPIC 3] User opportunity management UI
+**High Priority:**
+- **Issue #15**: Create system health monitoring UI
+- **Issue #17**: Performance testing with multiple concurrent users
+
+**Medium Priority:**
+- **Issue #10**: Add error recovery for interrupted onboarding
+- **Issue #11**: Implement admin metrics display on dashboard  
+- **Issue #12**: Add loading states and error handling throughout UI
+- **Issue #13**: Perform full end-to-end testing of all Epic 1 features
+- **Issue #14**: Set up demo data and test accounts
+- **Issue #16**: Document demo flow for stakeholders
+- **Issue #20**: Verify and fix admin dashboard metrics display
+
+**Low Priority:**
+- **Issue #18**: Remove email requirement from registration
 
 ## Project Overview
 
@@ -177,16 +183,13 @@ pnpm lint    # Run Next.js linter
   - ✅ ProfessionalEssenceService (essence extraction working)
 - **API Documentation**: Available at `/api/docs` (Swagger)
 
-### Frontend (Next.js) - ⚠️ PARTIALLY BROKEN
+### Frontend (Next.js) - ✅ FUNCTIONAL
 - **Routing**: App Router with route groups for (app), (admin), and (auth)
 - **Styling**: Tailwind CSS with custom Midnight Protocol theme
 - **State Management**: Zustand with persist middleware
 - **Components**: shadcn/ui components (Button, Card, Badge, Input, Label, Progress, RadioGroup, Tabs)
 - **Path Alias**: `@/*` maps to `src/*`
-- **Missing Files**:
-  - `/packages/web/src/app/(auth)/login/page.tsx` - User login (links from registration form)
-  - `/packages/web/src/app/(app)/dashboard/page.tsx` - User dashboard after login
-  - Missing admin auth store causing type errors
+- **WebSocket**: Real-time features with Socket.io client integration
 
 ### Database Schema - ✅ COMPLETE AND SYNCED
 - **Users**: onboardingStage field added, all relations working
@@ -213,11 +216,11 @@ pnpm lint    # Run Next.js linter
 10. **AI Backend** - Full conversational interview system
 11. **Professional Essence Storage** - Dedicated database structure
 
-### ⚠️ Broken/Missing Features
-1. **User Login** - Page deleted accidentally
-2. **User Dashboard** - Page deleted accidentally  
-3. **Admin Authentication Store** - Type errors
-4. **Frontend Build** - Cannot compile due to missing files
+### ⚠️ Features Needing Completion
+1. **Proving Ground 1** - Critical path for Epic 1 completion
+2. **System Health Monitoring** - /api/health endpoint and UI
+3. **Performance Metrics** - For Proving Ground demonstrations
+4. **Minor Spec Alignments** - Email removal from registration, admin metrics display
 
 ## AI Integration - 90% COMPLETE
 
@@ -235,11 +238,12 @@ pnpm lint    # Run Next.js linter
   - `POST /api/onboarding/complete` - Complete interview
   - `GET /api/onboarding/status/:id` - Get conversation status
 
-### ⚠️ Frontend Connection (READY BUT UNTESTED)
+### ✅ Frontend Connection (WORKING)
 - **Interview UI**: Complete chat interface at `/onboard/interview`
-- **API Integration**: Frontend code ready to call backend endpoints
-- **Progress Tracking**: Visual progress indicators implemented
+- **API Integration**: All endpoints connected and functional
+- **Progress Tracking**: Visual progress indicators working
 - **Error Handling**: Comprehensive error states
+- **WebSocket**: Real-time updates for username validation and status changes
 
 
 ## COMPLETED ISSUES (1-9)
@@ -332,21 +336,19 @@ Before considering Epic 1 complete, perform complete audit against:
 
 ## Recent Changes Log
 
-**June 9, 2025 - Issues #1-6 Complete + Route Fixes**:
-- ✅ Completed all 6 critical infrastructure issues
-- ✅ Fixed API route configuration (removed double /api prefix)
-- ✅ Created missing /auth/register page
-- ✅ Implemented conversation persistence to PostgreSQL
-- ✅ Fixed AI model to use google/gemini-2.5-flash-preview-05-20
-- ✅ Added development helper scripts in /scripts directory
-- ✅ All auth flows working: user registration, user login, admin login
-- ✅ Onboarding conversation persistence tested and functional
+**January 9, 2025 - Epic 1 Audit & GitHub Organization**:
+- ✅ Conducted comprehensive Epic 1 audit (88% complete)
+- ✅ Created 4 new GitHub issues (#18-21) for remaining Epic 1 work
+- ✅ Labeled all issues with appropriate epic tags
+- ✅ Identified Issue #21 (Proving Ground) as critical blocker
+- ✅ Updated CLAUDE.md with accurate project state
 
-**Key Technical Decisions**:
-- Global API prefix set in main.ts, controllers use relative paths
-- Separate User and AdminUser models for authentication
-- Conversations stored in OnboardingConversation table with JSON transcript
-- AI model specified in ai.service.ts getModelForTask method
+**June 9, 2025 - Issues #1-9 Complete**:
+- ✅ All critical infrastructure fixed
+- ✅ AI integration working with proper model
+- ✅ WebSocket support implemented
+- ✅ Email service integrated
+- ✅ Testing framework established
 
 ## Documentation References
 
@@ -415,5 +417,5 @@ A comprehensive Epic 1 audit was completed on January 9, 2025. See `/EPIC_1_AUDI
 
 ---
 
-**Current Status**: Epic 1 is 88% complete. Focus on Issue #17 (Proving Ground) to complete Epic 1.
+**Current Status**: Epic 1 is 88% complete. Focus on Issue #21 (Complete Proving Ground 1 functionality) to complete Epic 1. All GitHub issues are now properly organized with epic labels.
 
