@@ -4,6 +4,6 @@ import { AiService } from './ai.service';
 
 @Module({
   providers: [OpenRouterService, AiService],
-  exports: [AiService],
+  exports: [AiService, OpenRouterService],
 })
 export class AiModule {}
