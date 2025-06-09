@@ -105,13 +105,16 @@ export default function ProvingGround1AdminPage() {
               <h2 className="text-lg font-semibold mb-4">Pending Approvals ({pendingUsers.length})</h2>
               <div className="space-y-3">
                 {pendingUsers.map((user) => (
-                  <Card
+                  <div
                     key={user.id}
-                    className={`p-4 cursor-pointer transition-colors ${
-                      selectedUser?.id === user.id ? 'border-accent-primary' : ''
-                    }`}
                     onClick={() => setSelectedUser(user)}
+                    className="cursor-pointer"
                   >
+                    <Card
+                      className={`p-4 transition-colors ${
+                        selectedUser?.id === user.id ? 'border-accent-primary' : ''
+                      }`}
+                    >
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <p className="font-medium">{user.handle}</p>
@@ -127,6 +130,7 @@ export default function ProvingGround1AdminPage() {
                       </div>
                     )}
                   </Card>
+                  </div>
                 ))}
               </div>
             </Card>
@@ -144,7 +148,7 @@ export default function ProvingGround1AdminPage() {
                   <div className="flex space-x-2">
                     <Button
                       onClick={() => setViewMode('essence')}
-                      variant={viewMode === 'essence' ? 'default' : 'outline'}
+                      variant={viewMode === 'essence' ? 'primary' : 'outline'}
                       size="sm"
                     >
                       <FileText className="w-4 h-4 mr-2" />
@@ -152,7 +156,7 @@ export default function ProvingGround1AdminPage() {
                     </Button>
                     <Button
                       onClick={() => setViewMode('conversation')}
-                      variant={viewMode === 'conversation' ? 'default' : 'outline'}
+                      variant={viewMode === 'conversation' ? 'primary' : 'outline'}
                       size="sm"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />

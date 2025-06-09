@@ -261,10 +261,12 @@ export function UserProfile({ user, opportunities, positionMatrix }: UserProfile
             </Card>
           </div>
           
+          {/* Position Matrix - Deferred Feature
           <div className="mt-6">
             <h3 className="text-xl font-bold mb-4">Position Matrix</h3>
             <PositionMatrix positionMatrix={positionMatrix} editable={true} />
           </div>
+          */}
         </div>
       )}
     </div>

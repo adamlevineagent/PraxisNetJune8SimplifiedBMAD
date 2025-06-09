@@ -58,7 +58,7 @@ export default function RegisterPage() {
       await register({
         email,
         password,
-        handle: tempHandle, // Temporary handle, will be updated in next step
+        username: tempHandle, // Temporary username, will be updated in next step
         disclosureLevel: 'STEALTH', // Default to stealth
       });
       

@@ -6,8 +6,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Shield, Globe, Users, Lock, Edit, Save, X } from 'lucide-react';
+import { User as UserIcon, Shield, Globe, Users, Lock, Edit, Save, X } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
+import type { User } from '@/lib/auth-service';
 
 interface ProfessionalEssence {
   narrative: string;
@@ -171,7 +172,7 @@ export default function ProfilePage() {
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-accent-primary/20 rounded-full flex items-center justify-center">
-                <User className="w-8 h-8 text-accent-primary" />
+                <UserIcon className="w-8 h-8 text-accent-primary" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold">{user?.handle}</h1>

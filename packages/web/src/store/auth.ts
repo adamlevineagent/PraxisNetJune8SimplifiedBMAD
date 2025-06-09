@@ -6,6 +6,7 @@ interface User {
   email: string;
   handle: string;
   status: string;
+  disclosureLevel: 'OPEN' | 'STEALTH';
 }
 
 interface AuthState {

@@ -33,12 +33,27 @@ export default function InterviewPage() {
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState('');
 
-  const conversationId = sessionStorage.getItem('conversationId');
-  const agentName = sessionStorage.getItem('agentName') || 'Your agent';
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [agentName, setAgentName] = useState<string>('Your agent');
+
+  // Load from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedConversationId = sessionStorage.getItem('conversationId');
+      const storedAgentName = sessionStorage.getItem('agentName');
+      
+      if (!storedConversationId) {
+        router.push('/onboard/personalize');
+        return;
+      }
+      
+      setConversationId(storedConversationId);
+      setAgentName(storedAgentName || 'Your agent');
+    }
+  }, [router]);
 
   useEffect(() => {
     if (!conversationId) {
-      router.push('/onboard/personalize');
       return;
     }
 

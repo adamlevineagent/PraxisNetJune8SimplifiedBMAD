@@ -44,6 +44,13 @@ export function useAdminAuth() {
     return AuthService.getAdmin();
   };
 
+  const getToken = () => {
+    if (typeof window !== 'undefined') {
+      return AuthService.getAdminToken();
+    }
+    return null;
+  };
+
   return {
     state,
     login,
@@ -51,5 +58,6 @@ export function useAdminAuth() {
     clearError,
     isAuthenticated,
     getAdmin,
+    token: getToken(),
   };
 }
