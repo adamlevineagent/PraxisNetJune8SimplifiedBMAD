@@ -104,7 +104,7 @@ export function RegistrationForm({ className = '' }: RegistrationFormProps) {
         </form>
         <p className="mt-3 text-sm text-text-secondary">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-accent-primary hover:underline">
+          <Link href="/login" className="text-accent-primary hover:underline">
             Sign in
           </Link>
         </p>

@@ -9,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
-import { AuthService } from '@/services/auth.service';
-import { useAuth } from '@/store/auth';
+import { AuthService } from '@/lib/auth-service';
+import { useAuthStore } from '@/store/auth';
 import { websocketService } from '@/services/websocket.service';
 import { debounce } from 'lodash';
 
@@ -28,7 +28,7 @@ export default function RegisterPage() {
   } | null>(null);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
+  const { login } = useAuthStore();
 
   // Initialize WebSocket connection for anonymous username checking
   useEffect(() => {
