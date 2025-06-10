@@ -35,7 +35,7 @@ export default function AgentNamingPage() {
 
     try {
       // Create or update agent profile
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export default function AgentNamingPage() {
       }
 
       // Update onboarding stage
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/onboarding-stage`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/onboarding-stage`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

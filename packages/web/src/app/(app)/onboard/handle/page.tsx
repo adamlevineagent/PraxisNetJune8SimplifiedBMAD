@@ -35,7 +35,7 @@ export default function HandleSelectionPage() {
 
     setIsChecking(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/check-handle/${value}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/check-handle/${value}`);
       const data = await response.json();
       setAvailability(data);
     } catch (err) {
@@ -68,7 +68,7 @@ export default function HandleSelectionPage() {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default function HandleSelectionPage() {
       useAuthStore.getState().setUser(updatedUser);
 
       // Update onboarding stage
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/onboarding-stage`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/onboarding-stage`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

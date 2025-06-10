@@ -50,7 +50,7 @@ export default function PersonalizePage() {
 
   const checkExistingAgent = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +81,7 @@ export default function PersonalizePage() {
 
     try {
       // First, update agent profile with name
-      const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
+      const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export default function PersonalizePage() {
       }
 
       // Start the conversational interview
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/onboarding/start`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/onboarding/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default function PersonalizePage() {
       sessionStorage.setItem('agentName', agentName.trim());
       
       // Update onboarding stage
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/onboarding-stage`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/onboarding-stage`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

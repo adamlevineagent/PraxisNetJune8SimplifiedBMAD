@@ -11,7 +11,7 @@ export function useOnboardingRecovery() {
 
     const checkOnboardingStatus = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/onboarding-status`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/onboarding-status`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

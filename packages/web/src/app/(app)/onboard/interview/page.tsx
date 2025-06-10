@@ -60,7 +60,7 @@ export default function InterviewPage() {
     // Load initial greeting from session or fetch status
     const loadInitialState = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/onboarding/status/${conversationId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/onboarding/status/${conversationId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -110,7 +110,7 @@ export default function InterviewPage() {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/onboarding/message`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/onboarding/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ export default function InterviewPage() {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/onboarding/complete`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/onboarding/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

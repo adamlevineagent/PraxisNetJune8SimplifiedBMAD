@@ -53,7 +53,7 @@ export default function EnhancedHandleSelectionPage() {
           setAvailability(result);
         } else {
           // Fallback to HTTP endpoint
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/check-handle/${value}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/check-handle/${value}`);
           const data = await response.json();
           setAvailability({
             available: data.available,
@@ -89,7 +89,7 @@ export default function EnhancedHandleSelectionPage() {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export default function EnhancedHandleSelectionPage() {
       useAuthStore.getState().setUser(updatedUser);
 
       // Update onboarding stage
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/onboarding-stage`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/onboarding-stage`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

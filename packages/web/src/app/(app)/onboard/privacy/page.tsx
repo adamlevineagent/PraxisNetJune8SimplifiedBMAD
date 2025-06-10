@@ -75,7 +75,7 @@ export default function PrivacyConfigurationPage() {
 
     try {
       // Save privacy settings
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}/privacy`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/privacy`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export default function PrivacyConfigurationPage() {
       // Update disclosure level based on most restrictive setting
       const mostRestrictive = Object.values(privacySettings).includes('PUBLIC') ? 'OPEN' : 'STEALTH';
       
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export default function PrivacyConfigurationPage() {
       });
 
       // Update onboarding stage
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/onboarding-stage`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/onboarding-stage`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

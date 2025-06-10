@@ -62,10 +62,10 @@ export default function ProfilePage() {
   const fetchProfileData = async () => {
     try {
       const [essenceRes, privacyRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/essence`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me/essence`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/privacy`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me/privacy`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -101,7 +101,7 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/essence`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me/essence`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
