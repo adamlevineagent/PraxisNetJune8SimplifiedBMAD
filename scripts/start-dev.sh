@@ -29,10 +29,13 @@ echo "📋 Checking ports..."
 kill_port 3000  # Frontend default port
 kill_port 3001  # API port
 
+# Ensure logs directory exists
+mkdir -p logs
+
 # Start the API server in background
 echo "🔧 Starting API server on port 3001..."
 cd packages/api
-npm run dev > ../../logs/api.log 2>&1 &
+pnpm dev > ../../logs/api.log 2>&1 &
 API_PID=$!
 cd ../..
 
@@ -43,7 +46,7 @@ sleep 5
 # Start the web server in background
 echo "🌐 Starting web server on port 3000..."
 cd packages/web
-npm run dev > ../../logs/web.log 2>&1 &
+pnpm dev > ../../logs/web.log 2>&1 &
 WEB_PID=$!
 cd ../..
 
