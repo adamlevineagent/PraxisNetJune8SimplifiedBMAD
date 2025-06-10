@@ -135,7 +135,7 @@ praxis-network/
 6. **Access the application**
    - Frontend (Web): http://localhost:3000
    - Backend API: http://localhost:3001/api
-   - API Documentation: http://localhost:3001/api-docs
+  - API Documentation: http://localhost:3001/api/docs
 
 ## Running Services
 
