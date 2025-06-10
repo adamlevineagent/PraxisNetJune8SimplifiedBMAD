@@ -24,6 +24,8 @@ This document serves as the master index for all deliverables created during the
 1. [Deployment Guide](/home/ubuntu/praxis-network/deployment-guide.md) - Instructions for deploying to production environments
 2. [Feedback Collection Plan](/home/ubuntu/praxis-network/feedback-collection-plan.md) - Strategy for gathering user feedback
 3. [Feedback Tracking System](/home/ubuntu/praxis-network/feedback-tracking-system.md) - Process for managing user feedback
+4. [Server Issues Resolution](/home/ubuntu/praxis-network/SERVER-ISSUES-RESOLUTION.md) - Troubleshooting server stability
+
 
 ### Final Reports
 1. [Final Implementation Report](/home/ubuntu/praxis-network/final-implementation-report.md) - Comprehensive project summary
