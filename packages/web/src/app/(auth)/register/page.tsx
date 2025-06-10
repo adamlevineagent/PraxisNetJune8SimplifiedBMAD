@@ -33,7 +33,7 @@ export default function RegisterPage() {
   // Initialize WebSocket connection for anonymous username checking
   useEffect(() => {
     // Connect without token for anonymous username checking
-    const socket = websocketService.connect();
+    const socket = websocketService.connect('');
     
     const handleConnected = () => {
       setIsWebSocketConnected(true);
@@ -69,7 +69,7 @@ export default function RegisterPage() {
           setUsernameAvailability(result);
         } else {
           // Fallback to HTTP
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/check-username/${value}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/check-username/${value}`);
           const data = await response.json();
           setUsernameAvailability({
             available: data.available,

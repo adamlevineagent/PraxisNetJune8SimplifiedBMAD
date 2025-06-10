@@ -42,22 +42,25 @@ class WebSocketService {
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
 
-  connect(token: string): Socket {
+  connect(token?: string): Socket {
     if (this.socket?.connected) {
       return this.socket;
     }
 
     const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
     
-    this.socket = io(`${wsUrl}/ws`, {
-      auth: {
-        token,
-      },
+    const options: any = {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: this.maxReconnectAttempts,
       reconnectionDelay: this.reconnectDelay,
-    });
+    };
+    
+    if (token) {
+      options.auth = { token };
+    }
+    
+    this.socket = io(`${wsUrl}/ws`, options);
 
     this.setupConnectionHandlers();
     
