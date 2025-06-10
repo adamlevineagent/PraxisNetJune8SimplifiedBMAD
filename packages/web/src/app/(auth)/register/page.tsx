@@ -120,7 +120,12 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const data = await AuthService.register(email, username, password, disclosureLevel as 'OPEN' | 'STEALTH');
+      const data = await AuthService.register({
+        email,
+        username,
+        password,
+        disclosureLevel: disclosureLevel as 'OPEN' | 'STEALTH'
+      });
       
       // Store the auth data
       login(data.user, data.access_token);
