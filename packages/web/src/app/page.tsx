@@ -60,8 +60,11 @@ export default function LandingPage() {
         <div className="container-custom">
           <div className="text-center text-text-secondary">
             <p>&copy; {new Date().getFullYear()} Praxis Network. All rights reserved.</p>
-            <div className="mt-2">
+            <div className="mt-2 space-x-4">
               <Link href="/login" className="text-xs text-text-secondary hover:text-accent-primary opacity-50 hover:opacity-100">
+                Sign In
+              </Link>
+              <Link href="/admin-login" className="text-xs text-text-secondary hover:text-accent-primary opacity-50 hover:opacity-100">
                 Admin
               </Link>
             </div>
